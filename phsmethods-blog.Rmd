@@ -18,3 +18,5 @@ Over time, ISD has gradually (and at times begrudgingly) come to embrace open so
 
 ## Introducing phsmethods
 
+Analysts working across a multitude of teams in the soon-to-be-formed PHS have to perform many of the same, repetitive tasks, not all of which are catered for (to the best of our knowledge) by existing R packages: assigning dates to financial years in YYYY/YY format (e.g. 2016/17); formatting improperly recorded postcodes; returning quarters in plain English (e.g January to March 2020 or Jan-Mar 2020) rather than the slightly restrictive formats offered by [`lubridate::quarter()`](https://lubridate.tidyverse.org/reference/quarter.html) and [`zoo::yearqtr()`](https://cran.r-project.org/web/packages/zoo/zoo.pdf). The list is endless, and every analyst has their own workaround, which quickly becomes a problem. Even if disregarding the time wasted by multiple people devising an alternative way of doing the same thing, how do you make sure everyone's method actually does the same thing?
+
