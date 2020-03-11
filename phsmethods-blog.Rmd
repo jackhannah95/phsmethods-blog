@@ -1,0 +1,20 @@
+---
+title: 'phsmethods: an R package for Public Health Scotland'
+author: "Jack Hannah"
+date: "11 March 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+On Wednesday 1st April 2020, [Public Health Scotland (PHS)](https://www.publichealthscotland.scot/) will come into being. It will be formed as a result of a three-way merger between [NHS Health Scotland](http://www.healthscotland.scot/) and the [Information Services Division (ISD)](https://www.isdscotland.org/) and [Health Protection Scotland (HPS)](https://www.hps.scot.nhs.uk/) sections of [Public Health and Intelligence (PHI)](https://nhsnss.org/how-nss-works/our-structure/public-health-and-intelligence/) (which is in itself a strategic business unit of [NHS National Services Scotland (NSS)](https://nhsnss.org/)). Lots of acronyms, none of which you care about.
+
+The [Transforming Publishing Programme (TPP)](https://www.isdscotland.org/Products-and-Services/Transforming-Publishing-Programme/) was devised three-or-so years ago in an attempt to modernise the way in which ISD produces and presents its statistics. Traditionally, analytical work within ISD has been undertaken using proprietary software such as Excel and SPSS, with output presented predominantly in the form of PDF reports. It requires a great deal of manual formatting, causes an even greater deal of frustration for analysts with programming skills, and results in more copy and paste errors than anyone would care to admit.
+
+Over time, ISD has gradually (and at times begrudgingly) come to embrace open source software - predominantly R and, to a lesser extent, Python. TPP have been at the forefront of much of this: creating [style guides](https://github.com/Health-SocialCare-Scotland/R-Resources/blob/master/PHI%20R%20style%20guide.md); working with producers of official and national statistics to convert [PDF reports](https://www.isdscotland.org/Health-Topics/Mental-Health/Publications/2017-03-14/2017-03-14-Mental-Health-Report.pdf?34582155943) into [Shiny applications](https://www.isdscotland.org/Health-Topics/Mental-Health/Publications/2019-09-10/mental-health-inpatient-activity/data-explorer/); producing [R packages](https://github.com/NHS-NSS-transforming-publications/hsmr) and [Reproducible Analytical Pipelines](https://www.isdscotland.org/About-ISD/Methodologies/_docs/Reproducible_Analytical_Pipelines_paper_v1.4.pdf); and introducing [version control](https://nhs-nss-transforming-publications.github.io/git-guide/), among other things. Now, as we prepare to cross the Rubicon into Public Health Scotland, we in TPP are being posed a new challenge: rather than spreading R, how can we ensure that analysts are using it consistently?
+
+
+## Introducing phsmethods
+
