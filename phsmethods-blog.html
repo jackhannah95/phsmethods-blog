@@ -370,9 +370,12 @@ summary {
 </div>
 
 
+<div id="background" class="section level2">
+<h2>Background</h2>
 <p>On Wednesday 1st April 2020, <a href="https://www.publichealthscotland.scot/">Public Health Scotland (PHS)</a> will come into being. It will be formed as a result of a three-way merger between <a href="http://www.healthscotland.scot/">NHS Health Scotland</a> and the <a href="https://www.isdscotland.org/">Information Services Division (ISD)</a> and <a href="https://www.hps.scot.nhs.uk/">Health Protection Scotland (HPS)</a> sections of <a href="https://nhsnss.org/how-nss-works/our-structure/public-health-and-intelligence/">Public Health and Intelligence (PHI)</a> (which is in itself a strategic business unit of <a href="https://nhsnss.org/">NHS National Services Scotland (NSS)</a>). Lots of acronyms, none of which you care about.</p>
 <p>The <a href="https://www.isdscotland.org/Products-and-Services/Transforming-Publishing-Programme/">Transforming Publishing Programme (TPP)</a> was devised three-or-so years ago in an attempt to modernise the way in which ISD produces and presents its statistics. Traditionally, analytical work within ISD has been undertaken using proprietary software such as Excel and SPSS, with output presented predominantly in the form of PDF reports. It requires a great deal of manual formatting, causes an even greater deal of frustration for analysts with programming skills, and results in more copy and paste errors than anyone would care to admit.</p>
 <p>Over time, ISD has gradually (and at times begrudgingly) come to embrace open source software - predominantly R and, to a lesser extent, Python. TPP have been at the forefront of much of this: creating <a href="https://github.com/Health-SocialCare-Scotland/R-Resources/blob/master/PHI%20R%20style%20guide.md">style guides</a>; working with producers of official and national statistics to convert <a href="https://www.isdscotland.org/Health-Topics/Mental-Health/Publications/2017-03-14/2017-03-14-Mental-Health-Report.pdf?34582155943">PDF reports</a> into <a href="https://www.isdscotland.org/Health-Topics/Mental-Health/Publications/2019-09-10/mental-health-inpatient-activity/data-explorer/">Shiny applications</a>; producing <a href="https://github.com/NHS-NSS-transforming-publications/hsmr">R packages</a> and <a href="https://www.isdscotland.org/About-ISD/Methodologies/_docs/Reproducible_Analytical_Pipelines_paper_v1.4.pdf">Reproducible Analytical Pipelines</a>; and introducing <a href="https://nhs-nss-transforming-publications.github.io/git-guide/">version control</a>, among other things. Now, with the impending move to Public Health Scotland looming, TPP’s purview is broadening; not only to further the adoption of R, but to ensure it’s adopted in a consistent manner by the hundreds of analysts PHS will employ.</p>
+</div>
 <div id="introducing-phsmethods" class="section level2">
 <h2>Introducing phsmethods</h2>
 <p>Analysts working across a multitude of teams in the soon-to-be-formed PHS have to perform many of the same, repetitive tasks, not all of which are catered for (to the best of our knowledge) by existing R packages: assigning dates to financial years in YYYY/YY format (e.g. 2016/17); formatting improperly recorded postcodes; returning quarters in plain English (e.g January to March 2020 or Jan-Mar 2020) rather than the slightly restrictive formats offered by <a href="https://lubridate.tidyverse.org/reference/quarter.html"><code>lubridate::quarter()</code></a> and <a href="https://cran.r-project.org/web/packages/zoo/zoo.pdf"><code>zoo::yearqtr()</code></a>. The list is endless, and every analyst has their own workaround, which quickly becomes a problem. Even if disregarding the time wasted by multiple people devising an alternative way of doing the same thing, how can anyone be sure that everyone’s method actually does the same thing?</p>
@@ -381,6 +384,75 @@ summary {
 </div>
 <div id="using-phsmethods" class="section level2">
 <h2>Using phsmethods</h2>
+<p>Practical examples featuring all of phsmethods’ functions are available in the package’s <a href="https://github.com/Health-SocialCare-Scotland/phsmethods/blob/master/README.md">README</a> and no one will make it to the end of this blog if they’re all regurgitated here. But hopefully one is okay. Consider a dataset with a postcode variable that looks like this:</p>
+<pre class="r"><code>x &lt;- tibble::tribble(
+  ~patient_id, ~postcode,
+  1,           &quot;G26QE&quot;,
+  2,           &quot;KA8 9NB&quot;,
+  3,           &quot;PA152TY &quot;,
+  4,           &quot;G 4 2 9 B A&quot;,
+  5,           &quot;g207al&quot;,
+  6,           &quot;Dg98bS&quot;,
+  7,           &quot;DD37J    y&quot;,
+  8,           &quot;618&quot;,
+  9,           &quot;rabbit&quot;,
+  10,          &quot;owl&quot;
+)
+
+x</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    patient_id postcode     
+##         &lt;dbl&gt; &lt;chr&gt;        
+##  1          1 &quot;G26QE&quot;      
+##  2          2 &quot;KA8 9NB&quot;    
+##  3          3 &quot;PA152TY &quot;   
+##  4          4 &quot;G 4 2 9 B A&quot;
+##  5          5 &quot;g207al&quot;     
+##  6          6 &quot;Dg98bS&quot;     
+##  7          7 &quot;DD37J    y&quot; 
+##  8          8 &quot;618&quot;        
+##  9          9 &quot;rabbit&quot;     
+## 10         10 &quot;owl&quot;</code></pre>
+<p>It’s a problem that analysts across the NHS and beyond face regularly: a dataset containing postcodes arrives, but the postcodes are recorded inconsistently. Some have spaces; some don’t. Some are all upper case; some are all lower case; some are a combination of both. And some aren’t real postcodes. Often this dataset is to be joined with a larger postcode directory file to obtain some other piece of information (such as a <a href="https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/">measure of deprivation</a>). Joining these datasets tends not to be a trivial task; sometimes a <a href="https://github.com/dgrtwo/fuzzyjoin">fuzzyjoin</a> may suffice, but often it requires an arduous process of formatting the postcode variable in both datasets until they look the same, before combining using a <a href="https://dplyr.tidyverse.org/reference/join.html">dplyr join</a>.</p>
+<p>In PHS, postcodes generally follow one of two formats: pc7 format (all values have a string length of seven, with zero, one or two spaces before the last three digits as necessary), or pc8 format (all values have one space before the last three digits, regardless of the total number of digits). <code>phsmethods::postcode()</code> is designed to format any postcode, regardless of how it was originally recorded, into either of these formats. Consider the earlier dataset:</p>
+<pre class="r"><code>x %&gt;%
+  dplyr::mutate(postcode = phsmethods::postcode(postcode, format = &quot;pc8&quot;))</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    patient_id postcode
+##         &lt;dbl&gt; &lt;chr&gt;   
+##  1          1 G2 6QE  
+##  2          2 KA8 9NB 
+##  3          3 PA15 2TY
+##  4          4 G42 9BA 
+##  5          5 G20 7AL 
+##  6          6 DG9 8BS 
+##  7          7 DD3 7JY 
+##  8          8 &lt;NA&gt;    
+##  9          9 &lt;NA&gt;    
+## 10         10 &lt;NA&gt;</code></pre>
+<pre class="r"><code>x %&gt;%
+  
+  # The format is pc7 by default
+  dplyr::mutate(postcode = phsmethods::postcode(postcode)) %&gt;%
+  dplyr::pull(postcode) %&gt;%
+  stringr::str_length()</code></pre>
+<pre><code>##  [1]  7  7  7  7  7  7  7 NA NA NA</code></pre>
+<p>In hindsight, maybe it should have been called something other than <code>postcode()</code> to avoid the whole <code>postcode = postcode(postcode)</code> bit, but <a href="https://www.tidyverse.org/blog/2018/06/conflicted/">everyone makes mistakes</a> when it comes to naming functions.</p>
+<p><code>phsmethods::postcode()</code> isn’t designed to check whether a postcode actually exists; it just checks whether the input provided is a sequence of letters and numbers in the right order and of the right length to theoretically be one and, if so, formats it appropriately. If not, it recordes it as <code>NA</code>. (It records improper postcodes as <code>NA</code> to prevent a single erroneous one from failing on a large input vector of otherwise valid ones, for presumably the same reason as <code>lubridate::dmy()</code> returns an <code>NA</code> when provided with <code>31022020</code>.) Handily, <code>phsmethods::postcode()</code> comes with some warning messages to explain how many values were recorded as NA and what happens to lowercase letters:</p>
+<pre class="r"><code>y &lt;- testthat::capture_warnings(x %&gt;% dplyr::mutate(postcode = phsmethods::postcode(postcode)))
+
+writeLines(y[1])</code></pre>
+<pre><code>## 3 non-NA input values do not adhere to the standard UK postcode format (with or without spaces) and will be coded as NA. The standard format is:
+## • 1 or 2 letters, followed by
+## • 1 number, followed by
+## • 1 optional letter or number, followed by
+## • 1 number, followed by
+## • 2 letters</code></pre>
+<pre class="r"><code>writeLines(y[2])</code></pre>
+<pre><code>## Lower case letters in any input value(s) adhering to the standard UK postcode format will be converted to upper case</code></pre>
+</div>
+<div id="next-steps" class="section level2">
+<h2>Next steps</h2>
 </div>
 
 
