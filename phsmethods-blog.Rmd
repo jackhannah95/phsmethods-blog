@@ -23,14 +23,14 @@ Over time, ISD has gradually (and at times begrudgingly) come to embrace open so
 
 Analysts working across a multitude of teams in PHS will have to perform many of the same, repetitive tasks, not all of which are catered for by existing R packages: assigning dates to financial years in YYYY/YY format (e.g. 2016/17); formatting improperly recorded postcodes; returning quarters in plain English (e.g January to March 2020 or Jan-Mar 2020) rather than the slightly restrictive formats offered by [`lubridate::quarter()`](https://lubridate.tidyverse.org/reference/quarter.html) and [`zoo::yearqtr()`](https://cran.r-project.org/web/packages/zoo/zoo.pdf). The list is endless, and every analyst has their own workaround, which quickly becomes a problem. Even if disregarding the time wasted by multiple people devising an alternative way of doing the same thing, how can anyone be sure that everyone's method actually does the same thing?
 
-The [phsmethods](https://github.com/Health-SocialCare-Scotland/phsmethods) package was conceived to address (some of) these concerns. At the time of writing, it contains seven functions to automate some of the more laborious tasks analysts regularly face, with more in the works. None deal with any statistical methodology, nor are they likely to provoke any controversy or consternation over their methods of implementation; they are simple functions designed to make simple things that ought to be simple.
+The [phsmethods](https://github.com/Health-SocialCare-Scotland/phsmethods) package was conceived to address (some of) these concerns. At the time of writing, it contains seven functions to automate some of the more laborious tasks analysts regularly face, with more in the works. None deal with any statistical methodology, nor are they likely to provoke any controversy or consternation over their methods of implementation; they are simple functions designed to make routine data manipulation easier.
 
-phsmethods isn't on [CRAN](https://cran.r-project.org/), but it comes with many of the features one would expect from a CRAN package: [function documentation](https://github.com/Health-SocialCare-Scotland/phsmethods/tree/master/man); [unit tests](https://github.com/Health-SocialCare-Scotland/phsmethods/tree/master/tests/testthat); [continuous integration](https://travis-ci.com/github/Health-SocialCare-Scotland/phsmethods); [code coverage](https://codecov.io/gh/Health-SocialCare-Scotland/phsmethods); and [releases](https://github.com/Health-SocialCare-Scotland/phsmethods/releases). No hex sticker yet, but maybe one day.
+phsmethods isn't on [CRAN](https://cran.r-project.org/). Perhaps it will be at some point, but there hasn't been any need to make it available more widely thus far. phsmethods does, however, come with many of the features one would expect from a CRAN package: [function documentation](https://github.com/Health-SocialCare-Scotland/phsmethods/tree/master/man); [unit tests](https://github.com/Health-SocialCare-Scotland/phsmethods/tree/master/tests/testthat); [continuous integration](https://travis-ci.com/github/Health-SocialCare-Scotland/phsmethods); [code coverage](https://codecov.io/gh/Health-SocialCare-Scotland/phsmethods); and [releases](https://github.com/Health-SocialCare-Scotland/phsmethods/releases). No hex sticker yet, but maybe one day.
 
 
 ## Using phsmethods
 
-Practical examples featuring all of phsmethods' functions are available in the package's [README](https://github.com/Health-SocialCare-Scotland/phsmethods/blob/master/README.md) and no one will make it to the end of this blog if they're all regurgitated here. But hopefully one demonstration is okay. Consider the following dataset containing postcodes:
+Practical examples featuring all of phsmethods' functions are available in the package's [README](https://github.com/Health-SocialCare-Scotland/phsmethods/blob/master/README.md) and no one will make it to the end of this blogpost if they're all regurgitated here. But hopefully one demonstration is okay. Consider the following dataset containing postcodes:
 
 ```{r}
 df <- tibble::tribble(
@@ -42,9 +42,9 @@ df <- tibble::tribble(
   5,           "g207al",
   6,           "Dg98bS",
   7,           "DD37J    y",
-  8,           "618",
-  9,           "rabbit",
-  10,          "owl"
+  8,           "123223",
+  9,           "tiny",
+  10,          "changes"
 )
 
 df
@@ -53,7 +53,7 @@ df
 
 This is a problem that analysts across the NHS and beyond face regularly: a dataset containing postcodes arrives, but the postcodes are recorded inconsistently. Some have spaces; some don't. Some are all upper case; some are all lower case; some are a combination of both. And some aren't real postcodes. Often this dataset is to be joined with a larger postcode directory file to obtain some other piece of information (such as a [measure of deprivation](https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/)). Joining these datasets tends not to be a trivial task; sometimes a [fuzzyjoin](https://github.com/dgrtwo/fuzzyjoin) may suffice, but often it requires an arduous process of formatting the postcode variable in one dataset (or both datasets) until they look the same, before combining using a [dplyr join](https://dplyr.tidyverse.org/reference/join.html).
 
-In PHS, postcodes will typically follow one of two formats: pc7 format (all values have a string length of seven, with zero, one or two spaces before the last three digits as necessary), or pc8 format (all values have one space before the last three digits, regardless of the total number of digits). `phsmethods::postcode()` is designed to format any valid postcode, regardless of how it was originally recorded, into either of these formats. Consider the earlier dataset:
+In PHS, postcodes will typically follow one of two formats: pc7 format (all values have a string length of seven, with zero, one or two spaces before the last three digits as necessary); or pc8 format (all values have one space before the last three digits, regardless of the total number of digits). `phsmethods::postcode()` is designed to format any valid postcode, regardless of how it was originally recorded, into either of these formats. Consider the earlier dataset:
 
 ```{r, warning=FALSE}
 df %>%
@@ -82,12 +82,12 @@ writeLines(warnings[2])
 
 ## Next steps
 
-The seven functions which comprised the [first release](https://github.com/Health-SocialCare-Scotland/phsmethods/releases/tag/0.1.0) of phsmethods were all written by members of TPP. However, the package is not intended to be a self-congratulatory TPP pet-project. Those initial functions were designed to get the package off the ground, but now contributions are open to be made by anyone in PHS.
+The seven functions which comprised the [first release](https://github.com/Health-SocialCare-Scotland/phsmethods/releases/tag/0.1.0) of phsmethods were all written by members of TPP. However, the package is not intended to be a vanity exercise for the team. Those initial functions were designed to get the package off the ground, but now contributions are open to be made by anyone in PHS.
 
 Unlike many R packages, phsmethods has three maintainers, each with an equitable say in the direction the package takes. When one maintainer moves on or gets fed up, someone else will be sourced from the pool of analysts, and the show will go on. In theory at least.
 
 There are moderately extensive [guidelines](https://github.com/Health-SocialCare-Scotland/phsmethods/tree/master#contributing-to-phsmethods) for anyone who wishes to contribute to phsmethods to follow. Proposed functions (or amendments to existing functions) should be submitted as [GitHub issues](https://github.com/Health-SocialCare-Scotland/phsmethods/issues) for the maintainers to review and discuss. If approved, the contributor makes a [branch](https://github.com/Health-SocialCare-Scotland/phsmethods/branches) and submits a [pull request](https://github.com/Health-SocialCare-Scotland/phsmethods/pulls) for one or more of the maintainers to review. The hope is that, by creating an issue prior to making a contribution, no one will devote time and energy to something which can't be accepted, and that no duplication of effort will occur in the case of multiple people having the same idea.
 
-It's not expected that everyone who wishes to contribute to phsmethods will understand, or have experience of, all of the nuances of package development. Many won't have used version control; most won't have written unit tests or used continuous integration before. That's okay though. The only requirement for someone to contribute is that they should know how to write an R function. The package maintainers are there to help with the rest.
+It's not expected that everyone who wishes to contribute to phsmethods will understand, or have experience of, all of the nuances of package development. Many won't have used version control; most won't have written unit tests or used continuous integration before. That's okay though. The only requirement for someone to contribute is that they should know how to write an R function. The package maintainers are there to help them learn the rest.
 
-Hopefully phsmethods provides a safe incubator for analysts who wish to develop their skills in function writing, documentation and unit testing prior to making their own open source contributions elsewhere. And hopefully the knock-on effect of more analysts developing these skills is improved coding standards permeating throughout the organisation. If not, it'll at least look good having a package pinned on my [GitHub profile](https://github.com/jackhannah95). 
+Hopefully phsmethods will provide a safe incubator for analysts who wish to develop their skills in function writing, documentation and unit testing prior to making their own open source contributions elsewhere. And hopefully the knock-on effect of more analysts developing these skills is improved coding standards permeating throughout the organisation. If not, it'll at least look good having a package pinned on my [GitHub profile](https://github.com/jackhannah95). 
